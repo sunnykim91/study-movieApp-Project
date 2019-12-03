@@ -1,0 +1,20 @@
+.movies {
+  text-align: center;
+}
+.movie_list_item {
+  display: inline-flex;
+  margin: 30px;
+}
+/* 
+.movie_title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.movie_poster {
+  margin-left: 50px;
+}
+
+.movie_rating {
+} */
