@@ -1,0 +1,18 @@
+.MovieInfo {
+  display: block;
+  text-align: -webkit-center;
+}
+
+.sugMovieTitle {
+  margin-top: 20px;
+  border: 1px solid green;
+  padding: 10px;
+}
+
+.sugMovieTop {
+  font-weight: 600;
+}
+
+.sugMovieItem {
+  margin-top: 20px;
+}

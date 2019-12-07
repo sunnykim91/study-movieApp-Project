@@ -1,15 +1,18 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect, createContext, useRef } from "react";
 import "./reset.css";
 import "./Movie_List.css";
 import axios from "axios";
 import Media from "./Card";
 import FilterBar from "./FilterBar";
+import InfiniteScroll from "react-infinite-scroller";
+import { Link } from "react-router-dom";
 
 export const MovieListContext = createContext();
 
 const Movie_List = () => {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsloading] = useState(true);
+  let pageNum = useRef(1);
   const [genre, setGenre] = useState("");
   const [rating, setRating] = useState(5);
   const [someAlign, setSomeAlign] = useState("");
@@ -51,13 +54,24 @@ const Movie_List = () => {
         data: { movies }
       }
     } = await axios.get(
-      `https://yts.lt/api/v2/list_movies.json?limit=12&genre=${genre}&minimum_rating=${rating}&sort_by=${someAlign}&order_by=${align}`
+      `https://yts.lt/api/v2/list_movies.json?limit=12&page=${pageNum.current}&genre=${genre}&minimum_rating=${rating}&sort_by=${someAlign}&order_by=${align}`
     );
     console.log(movies);
     setMovieList(movies);
     setIsloading(false);
   };
 
+  const loadFunc = async () => {
+    pageNum.current += 1;
+    const {
+      data: {
+        data: { movies }
+      }
+    } = await axios.get(
+      `https://yts.lt/api/v2/list_movies.json?limit=12&page=${pageNum.current}&genre=${genre}&minimum_rating=${rating}&sort_by=${someAlign}&order_by=${align}`
+    );
+    setMovieList(prevMovies => [...prevMovies, ...movies]);
+  };
   // const getLikeCount = id => {
   //   console.log(id);
   //   const {
@@ -70,6 +84,8 @@ const Movie_List = () => {
 
   useEffect(() => {
     getMovieList();
+    pageNum.current = 1;
+    setMovieList([]);
   }, [genre, rating, someAlign, align]);
 
   const value = {
@@ -92,17 +108,25 @@ const Movie_List = () => {
         ) : (
           <div className="movies">
             <FilterBar />
-            {movieList.map(movie => (
-              <div className="movie_list_item" key={movie.id}>
-                <Media
-                  title={movie.title}
-                  poster={movie.medium_cover_image}
-                  rating={movie.rating}
-                  runtime={movie.runtime}
-                  genres={movie.genres}
-                />
-              </div>
-            ))}
+            <InfiniteScroll
+              pageStart={pageNum.current}
+              loadMore={loadFunc}
+              hasMore={true || false}
+            >
+              {movieList.map(movie => (
+                <div className="movie_list_item" key={movie.id}>
+                  <Link to={`/detail/${movie.id}`}>
+                    <Media
+                      title={movie.title}
+                      poster={movie.medium_cover_image}
+                      rating={movie.rating}
+                      runtime={movie.runtime}
+                      genres={movie.genres}
+                    />
+                  </Link>
+                </div>
+              ))}
+            </InfiniteScroll>
           </div>
         )}
       </section>
