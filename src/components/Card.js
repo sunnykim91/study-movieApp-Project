@@ -42,7 +42,6 @@ function Media({ title, poster, rating, runtime, genres }) {
       {<CardMedia className={classes.media} image={poster} title={title} />}
 
       <CardContent className="cardContent">
-        장르 :
         {genres.map((genre, index) => (
           <ul key={index} className="content-Ul">
             <li>{genre}</li>
